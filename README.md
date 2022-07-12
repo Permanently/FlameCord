@@ -1,3 +1,17 @@
+## Why is this forked?
+
+Well, simply because 2LStudios removed permanent links. I've added them back temporarily (until 2LS re-add the permalinks themselves) using nightly.link and Github Workflows.
+
+You can find them below:
+
+|     |
+|---|
+| **[JDK 8 Build](https://nightly.link/Permanently/FlameCord/workflows/flamecord-build/master/FlameCord-JDK8.zip)**  |
+| **[JDK 11 Build](https://nightly.link/Permanently/FlameCord/workflows/flamecord-build/master/FlameCord-JDK11.zip)** | 
+| **[JDK 17 Build](https://nightly.link/Permanently/FlameCord/workflows/flamecord-build/master/FlameCord-JDK17.zip)** | 
+
+---
+
 FlameCord
 =======
 
