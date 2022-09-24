@@ -1,4 +1,4 @@
-From fd425f8a23b16f34f1a538cb1f7c64cab08cfb33 Mon Sep 17 00:00:00 2001
+From 4fc4176aa233588dddc277eb1ead2e66ed4c806f Mon Sep 17 00:00:00 2001
 From: LinsaFTW <25271111+linsaftw@users.noreply.github.com>
 Date: Fri, 4 Mar 2022 13:35:53 -0300
 Subject: [PATCH] Antibot System
@@ -774,10 +774,10 @@ index c78ab3a7..4079caa5 100644
  
      private FlameCord(final Logger logger, final Collection<String> whitelistedAddresses) {
 diff --git a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-index 5d92c20c..da3f915f 100644
+index 5d92c20c..85f71cf8 100644
 --- a/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
 +++ b/flamecord/src/main/java/dev/_2lstudios/flamecord/configuration/FlameCordConfiguration.java
-@@ -16,6 +16,120 @@ import net.md_5.bungee.config.Configuration;
+@@ -16,6 +16,123 @@ import net.md_5.bungee.config.Configuration;
  import net.md_5.bungee.config.ConfigurationProvider;
  
  public class FlameCordConfiguration extends FlameConfig {
@@ -796,6 +796,8 @@ index 5d92c20c..da3f915f 100644
 +    private boolean antibotCountryFirewall = true;
 +    @Getter
 +    private Collection<String> antibotCountryBlacklist = Arrays.asList("CN", "HK", "RU", "IN", "TH", "ID", "DZ", "VN", "IR", "PK");
++    @Getter
++    private Collection<String> antibotFirewalledExceptions = Arrays.asList("BadPacketException", "QuietException", "IllegalStateConfig", "FastException");
 +    @Getter
 +    private boolean antibotCountryLog = true;
 +    @Getter
@@ -869,6 +871,7 @@ index 5d92c20c..da3f915f 100644
 +        this.antibotFastChatTime = setIfUnexistant("antibot.fastchat.time", this.antibotFastChatTime, config);
 +        this.antibotFastChatLog = setIfUnexistant("antibot.fastchat.log", this.antibotFastChatLog, config);
 +        this.antibotFirewallEnabled = setIfUnexistant("antibot.firewall.enabled", this.antibotFirewallEnabled, config);
++        this.antibotFirewalledExceptions = setIfUnexistant("antibot.firewall.exceptions", this.antibotFirewalledExceptions, config);
 +        this.antibotFirewallIpset = setIfUnexistant("antibot.firewall.ipset", this.antibotFirewallIpset, config);
 +        this.antibotFirewallExpire = setIfUnexistant("antibot.firewall.time", this.antibotFirewallExpire, config);
 +        this.antibotFirewallLog = setIfUnexistant("antibot.firewall.log", this.antibotFirewallLog, config);
@@ -898,7 +901,7 @@ index 5d92c20c..da3f915f 100644
      // FlameCord - TCP Fast Open
      @Getter
      private int tcpFastOpen = 3;
-@@ -117,6 +231,8 @@ public class FlameCordConfiguration extends FlameConfig {
+@@ -117,6 +234,8 @@ public class FlameCordConfiguration extends FlameConfig {
              this.fakePlayersEnabled = setIfUnexistant("custom-motd.fakeplayers.enabled", this.fakePlayersEnabled, configuration);
              this.fakePlayersAmount = setIfUnexistant("custom-motd.fakeplayers.amount", this.fakePlayersAmount, configuration);
              this.fakePlayersMode = setIfUnexistant("custom-motd.fakeplayers.mode", this.fakePlayersMode, configuration);
@@ -930,10 +933,10 @@ index 4f306660..33c40733 100644
  			setIfUnexistant("flamecord_reload", "&aAll files had been successfully reloaded!", configuration);
  			setIfUnexistant("flamecord_help",
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index caff4e99..ad5fc0ae 100644
+index 7035729b..ee08bbe5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -20,6 +20,8 @@ import java.util.logging.Level;
+@@ -21,6 +21,8 @@ import java.util.logging.Level;
  import javax.crypto.SecretKey;
  import javax.crypto.spec.SecretKeySpec;
  
@@ -942,7 +945,7 @@ index caff4e99..ad5fc0ae 100644
  import dev._2lstudios.flamecord.FlameCord;
  
  import dev._2lstudios.flamecord.configuration.FlameConfig;
-@@ -417,6 +419,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -438,6 +440,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -954,7 +957,7 @@ index caff4e99..ad5fc0ae 100644
          switch ( handshake.getRequestedProtocol() )
          {
              case 1:
-@@ -428,6 +435,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -449,6 +456,22 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  thisState = State.STATUS;
                  ch.setProtocol( Protocol.STATUS );
@@ -977,7 +980,7 @@ index caff4e99..ad5fc0ae 100644
                  break;
              case 2:
                  // Login
-@@ -439,6 +462,21 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -460,6 +483,21 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  thisState = State.USERNAME;
                  ch.setProtocol( Protocol.LOGIN );
  
@@ -999,7 +1002,7 @@ index caff4e99..ad5fc0ae 100644
                  if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
                  {
                      if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-@@ -499,6 +537,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -524,6 +562,58 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              return;
          }
  
@@ -1111,24 +1114,65 @@ index fa87750f..67263bca 100644
          ChatEvent chatEvent = new ChatEvent( con, con.getServer(), message );
          if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
          {
+diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java b/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
+index e2911d5e..69e0b551 100644
+--- a/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
+@@ -8,7 +8,11 @@ import io.netty.handler.codec.http.HttpResponse;
+ import io.netty.handler.codec.http.HttpResponseStatus;
+ import io.netty.handler.codec.http.LastHttpContent;
+ import java.nio.charset.Charset;
++import java.util.logging.Level;
++
++import dev._2lstudios.flamecord.FlameCord;
+ import lombok.RequiredArgsConstructor;
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.Callback;
+ 
+ @RequiredArgsConstructor
+@@ -21,6 +25,14 @@ public class HttpHandler extends SimpleChannelInboundHandler<HttpObject>
+     @Override
+     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+     {
++        // Flamecord start - Antibot System
++        if (FlameCord.getInstance().getFlameCordConfiguration().getAntibotFirewalledExceptions().contains(cause.getClass().getSimpleName()))
++        {
++            FlameCord.getInstance().getAddressDataManager().getAddressData(ctx.channel().remoteAddress()).firewall();
++            BungeeCord.getInstance().getLogger().log( Level.INFO, "[FlameCord] [{0}] was firewalled because of " + cause.getClass().getSimpleName(), ctx.channel().remoteAddress() );
++        }
++        // Flamecord end - Antibot System
++
+         try
+         {
+             callback.done( null, cause );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 20c4c0a4..c737482e 100644
+index 65e79eec..f1f6fae2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -152,6 +152,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -12,6 +12,8 @@ import io.netty.handler.timeout.ReadTimeoutException;
+ import java.io.IOException;
+ import java.net.InetSocketAddress;
+ import java.util.logging.Level;
++
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.connection.CancelSendSignal;
+ import net.md_5.bungee.connection.InitialHandler;
+@@ -148,6 +150,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+     @Override
+     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+     {
++        // Flamecord start - Antibot System
++        if (FlameCord.getInstance().getFlameCordConfiguration().getAntibotFirewalledExceptions().contains(cause.getClass().getSimpleName()))
++        {
++            FlameCord.getInstance().getAddressDataManager().getAddressData(ctx.channel().remoteAddress()).firewall();
++            BungeeCord.getInstance().getLogger().log( Level.INFO, "[FlameCord] [{0}] was firewalled because of " + cause.getClass().getSimpleName(), ctx.channel().remoteAddress() );
++        }
++        // Flamecord end - Antibot System
++
+         if ( ctx.channel().isActive() )
          {
              boolean logExceptions = !( handler instanceof PingHandler );
- 
-+            // Flamecord start - Antibot System
-+            if (!(cause instanceof ReadTimeoutException && cause instanceof IOException))
-+            {
-+                FlameCord.getInstance().getAddressDataManager().getAddressData(ctx.channel().remoteAddress()).firewall();
-+            }
-+            // Flamecord end - Antibot System
-+
-             // FlameCord - Option to log exceptions
-             logExceptions = FlameCord.getInstance().getFlameCordConfiguration().isLoggerExceptions() ? logExceptions : false;
-             
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 index ffea1599..6bf109f5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
@@ -1154,5 +1198,5 @@ index ffea1599..6bf109f5 100644
              {
                  ch.close();
 -- 
-2.36.1.windows.1
+2.37.0.windows.1
 
