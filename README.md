@@ -10,6 +10,8 @@ You can find them below:
 | **[JDK 11 Build](https://nightly.link/Permanently/FlameCord/workflows/flamecord-build/master/FlameCord-JDK11.zip)** | 
 | **[JDK 17 Build](https://nightly.link/Permanently/FlameCord/workflows/flamecord-build/master/FlameCord-JDK17.zip)** | 
 
+**Edit:** Seems [FlameCord Jenkins](https://ci.2lstudios.dev/job/FlameCord/) is back, although I'm not sure when that came around again. At the time of writing this the last build on their Jenkins was in July (v1.0.5), whilst these builds are the latest (v1.1.3). I'd recommend going with the latter and downloading the latest from here, but it's up to you.
+
 ---
 
 FlameCord
