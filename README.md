@@ -1,10 +1,12 @@
 ## Why is this forked?
 
-Well, simply because 2LStudios removed permanent links. I've added them back temporarily (until 2LS re-add the permalinks themselves) using nightly.link and Github Workflows.
+Originally, this was forked due to 2LStudios removing permanent links for downloads. However, recently they've also removed the free downloads and put the download links behind a BuiltByBit paywall. [linsaftw talks more about this here.](https://github.com/Permanently/FlameCord/commit/9f61fee97f1de2ed44965e6092bb9bf3dd117646#commitcomment-101015673) I've added them back for those who (unfortunately) are not able to support 2LStudios financially, as their licensing allows this. 
+
+If you would like to support 2LStudios (I recommend it) then you may use the links on the original readme.md below this section.
 
 You can find them below:
 
-|     |
+|  **[nightly.link permalinks](https://nightly.link/Permanently/FlameCord/workflows/flamecord-build/master)**   |
 |---|
 | **[JDK 8 Build](https://nightly.link/Permanently/FlameCord/workflows/flamecord-build/master/FlameCord-JDK8.zip)**  |
 | **[JDK 11 Build](https://nightly.link/Permanently/FlameCord/workflows/flamecord-build/master/FlameCord-JDK11.zip)** | 
