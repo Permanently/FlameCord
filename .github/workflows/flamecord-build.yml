@@ -4,7 +4,11 @@
 # if the change is working properly.
 name: FlameCord Build (master)
 
-on: [push]
+on: 
+  workflow_run:
+    workflows: ["Upstream Sync"]
+    types:
+      - completed
 
 jobs:
   build:
